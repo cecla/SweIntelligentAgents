@@ -1,0 +1,17 @@
+{
+  "/Users/cecilialagerwall/Documents/Skola/Intelligent_Agents/Assignments/lib/repast.jar": {
+    "location": "/Users/cecilialagerwall/Documents/Skola/Intelligent_Agents/Assignments/lib/repast.jar",
+    "status": "UNRESOLVED",
+    "error": "No call model found for \u0027/Users/cecilialagerwall/Documents/Skola/Intelligent_Agents/Assignments/lib/repast.jar\u0027. Neither fingerprint \u00279ced1987c58900695bc3faae677eb88a78416333\u0027 nor symbolic name \u0027repast\u0027 are known."
+  },
+  "/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/classes.jar": {
+    "coordinate": "jre:jre:zip:call:1.0.0",
+    "location": "/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/classes.jar",
+    "status": "RESOLVED"
+  },
+  "/Users/cecilialagerwall/Documents/Skola/Intelligent_Agents/Assignments/rabbits/lastname/src": {
+    "location": "/Users/cecilialagerwall/Documents/Skola/Intelligent_Agents/Assignments/rabbits/lastname/src",
+    "status": "UNRESOLVED",
+    "error": "No class path info available for \u0027/Users/cecilialagerwall/Documents/Skola/Intelligent_Agents/Assignments/rabbits/lastname/src\u0027. Skipped."
+  }
+}

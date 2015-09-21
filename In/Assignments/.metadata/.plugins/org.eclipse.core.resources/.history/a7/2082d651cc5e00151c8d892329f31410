@@ -1,0 +1,53 @@
+/**
+ * Class that implements the simulation space of the rabbits grass simulation.
+ * @author 
+ */
+import uchicago.src.sim.space.Object2DGrid;
+
+public class RabbitsGrassSimulationSpace 
+{
+	private Object2DGrid moneySpace;
+	
+	public RabbitsGrassSimulationSpace(int xSize, int ySize)
+	{
+		for(int i = 0; i < xSize; i++)
+		{
+			for(int j = 0; j < ySize; j++)
+			{
+				moneySpace.putObjectAt(i, j, new Integer(0));
+			}
+		}
+	}
+	
+	public void spreadMoney(int money)
+	{
+		//randomly place money in moneySpace
+		for(int i = 0; i < money; i++)
+		{
+			//choose coord.
+			int x = (int)(Math.random()*(moneySpace.getSizeX()));
+			int y = (int)(Math.random()*(moneySpace.getSizeY()));
+			
+			//Get the value of the object at those coord.
+			int currentValue = getMoneyAt(x,y);
+			
+			//Replace the Integer objcet with another one with the new value 
+			moneySpace.putObjectAt(x,y, new Integer(currentValue + 1));
+		}
+	}
+	
+	public int getMoneyAt(int x, int y)
+	{
+		int i;
+		
+		if(moneySpace.getObjectAt(x, y) != null)
+		{
+			i = ((Integer)moneySpace.getObjectAt(x, y)).intValue();
+		}
+		else
+		{
+			i = 0;
+		}
+		return i;
+	}
+}

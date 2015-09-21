@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="lastname/src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Users/cecilialagerwall/Documents/Skola/Intelligent_Agents/In/Assignments/lib/colt.jar"/>
+	<classpathentry kind="lib" path="/Users/cecilialagerwall/Documents/Skola/Intelligent_Agents/In/Assignments/lib/commons-math-1.1.jar"/>
+	<classpathentry kind="lib" path="/Users/cecilialagerwall/Documents/Skola/Intelligent_Agents/In/Assignments/lib/jdom.jar"/>
+	<classpathentry kind="lib" path="/Users/cecilialagerwall/Documents/Skola/Intelligent_Agents/In/Assignments/lib/jsolver.jar"/>
+	<classpathentry kind="lib" path="/Users/cecilialagerwall/Documents/Skola/Intelligent_Agents/In/Assignments/lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="/Users/cecilialagerwall/Documents/Skola/Intelligent_Agents/In/Assignments/lib/logist.jar"/>
+	<classpathentry kind="lib" path="/Users/cecilialagerwall/Documents/Skola/Intelligent_Agents/In/Assignments/lib/plot.jar"/>
+	<classpathentry kind="lib" path="/Users/cecilialagerwall/Documents/Skola/Intelligent_Agents/In/Assignments/lib/repast.jar"/>
+	<classpathentry kind="output" path="lastname/bin"/>
+</classpath>
