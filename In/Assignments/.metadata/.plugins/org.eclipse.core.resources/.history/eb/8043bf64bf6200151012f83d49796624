@@ -1,0 +1,204 @@
+import java.awt.Color;
+import java.util.ArrayList;
+
+import uchicago.src.sim.engine.Schedule;
+import uchicago.src.sim.engine.SimModelImpl;
+import uchicago.src.sim.gui.ColorMap;
+import uchicago.src.sim.gui.DisplaySurface;
+import uchicago.src.sim.gui.Value2DDisplay;
+
+/**
+ * Class that implements the simulation model for the rabbits grass
+ * simulation.  This is the first class which needs to be setup in
+ * order to run Repast simulation. It manages the entire RePast
+ * environment and the simulation.
+ *
+ * @author 
+ */
+
+
+public class RabbitsGrassSimulationModel extends SimModelImpl {		
+	//Default values
+	private static final int NUMAGENTS = 20;
+	private static final int WORLDXSIZE = 20;
+	private static final int WORLDYSIZE = 20;
+	private static final int TOTALGRASS = 500;
+	private static final int AGENT_MAX_ENERGY = 50;
+	private static final int AGENT_MIN_ENERGY = 30;
+	
+	private Schedule schedule;
+	
+	// create space in the model-class
+	private RabbitsGrassSimulationSpace rgsSpace;
+	
+	private DisplaySurface displaySurf;
+	
+	private ArrayList agentList;
+	
+	private int numAgents = NUMAGENTS;
+	private int worldXSize = WORLDXSIZE;
+	private int worldYSize = WORLDYSIZE;
+	private int grass = TOTALGRASS;
+	private int maxBirthEnergy = AGENT_MAX_ENERGY;
+	private int minBirthEnergy = AGENT_MIN_ENERGY;
+	
+		public static void main(String[] args) {
+			
+			System.out.println("Rabbit skeleton");
+			
+		}
+
+		public void begin() {
+			// TODO Auto-generated method stub
+			buildModel();
+			buildSchedule();
+			buildDisplay();
+			
+			displaySurf.display();
+		}
+		
+		public void buildModel()
+		{
+			System.out.println("Running buildModel");
+			// create a new space object 
+			rgsSpace = new RabbitsGrassSimulationSpace(worldXSize, worldYSize);
+			
+			// grow grass randomly
+			rgsSpace.growGrass(grass);
+			
+			// add agents
+			for(int i = 0; i<numAgents;i++){
+				addNewAgent()
+				
+			}
+			
+		}
+		
+		public void buildSchedule()
+		{
+			System.out.println("Running buildSchedule");
+		}
+		
+		public void buildDisplay()
+		{
+			System.out.println("Running buildDisplay");
+			
+			// Creating a new color mapping
+			ColorMap map = new ColorMap();
+			
+			for(int i = 1; i<16;i++){
+				// make the grass green
+				map.mapColor(i, new Color(0,(int)(i*8+127),0));
+			}
+			map.mapColor(0, Color.white);
+			
+			Value2DDisplay displayGrass = new Value2DDisplay(rgsSpace.getCurrentGrassSpace(), map);
+			
+			displaySurf.addDisplayable(displayGrass, "grass");
+		}
+
+		//parameters that we can change before the setup
+		public String[] getInitParam() 
+		{
+			String[] initParams = {"NumAgents", "WorldXSize", "WorldYSize", "TotalGrass", "MinBirthEnergy", "MaxBirthEnergy"};
+			return initParams;
+		}
+
+		public String getName() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public Schedule getSchedule() {
+			// TODO Auto-generated method stub
+			return schedule;
+		}
+
+		public void setup() {
+			// TODO Auto-generated method stub
+			System.out.println("Running setup");
+			//reset
+			rgsSpace = null;
+			// create a new agentList
+			agentList = new ArrayList();
+			
+			// reset old display
+			if (displaySurf != null)
+			{
+				displaySurf.dispose();
+			}
+			displaySurf = null;
+			
+			displaySurf = new DisplaySurface(this, "Rabbits Grass Model Window 1");
+			
+			registerDisplaySurface("Rabbits Grass Model Window 1", displaySurf);
+		
+		}
+		
+		private void addNewAgent(){
+			
+			RabbitsGrassSimulationAgent rgsAgent = new RabbitsGrassSimulationAgent(minBirthEnergy,maxBirthEnergy);
+			agentList.add(rgsAgent);
+		
+		}
+		
+		public void setNumAgents(int na)
+		{
+			numAgents = na;
+		}
+		
+		public int getNumAgents()
+		{
+			return numAgents;
+		}
+		
+		public int getWorldXSize()
+		{
+			return worldXSize;
+		}
+		
+		public void setWorldXSize(int x)
+		{
+			worldXSize = x;
+		}
+		
+		public int getWorldYSize()
+		{
+			return worldYSize;
+		}
+		
+		public void setWorldYSize(int y)
+		{
+			worldYSize = y;
+		}
+		
+		public int getTotalGrass()
+		{
+			return grass;
+		}
+		
+		public void setTotalGrass(int tg)
+		{
+			grass = tg;
+		}
+		
+		public void setMaxBirthEnergy(int e)
+		{
+			maxBirthEnergy = e;
+		}
+		
+		public int getMaxBirthEnergy()
+		{
+			return maxBirthEnergy;
+		}
+		
+		public void setMinBirthEnergy(int e)
+		{
+			minBirthEnergy = e;
+		}
+		
+		public int getMinBirthEnergy()
+		{
+			return minBirthEnergy;
+		}
+}

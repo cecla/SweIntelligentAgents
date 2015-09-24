@@ -1,8 +1,7 @@
+import java.awt.Color;
+
 import uchicago.src.sim.gui.Drawable;
 import uchicago.src.sim.gui.SimGraphics;
-import uchicago.src.sim.space.Object2DGrid;
-
-import java.awt.Color;
 
 
 /**
@@ -12,79 +11,29 @@ import java.awt.Color;
  */
 
 public class RabbitsGrassSimulationAgent implements Drawable {
-	
+
 	private int x;
 	private int y;
-	private int vX; //velocity in direction X
-	private int vY; //velocity in direction Y
-	private int grass;
-	private int stepsToLive;
+	private int energy;
 	private static int IDNumber = 0;
 	private int ID;
-	private RabbitsGrassSimulationSpace rgsSpace;
 	
-	public RabbitsGrassSimulationAgent(int minLifespan, int maxLifespan)
-	{
+	public RabbitsGrassSimulationAgent(int minBirthEnergy, int maxBirthEnergy){
+		// initialize energy,position and assigning a unique ID
 		x = -1;
 		y = -1;
-		grass = 0;
-		setVxVy();
-		stepsToLive = (int)((Math.random() * (maxLifespan - minLifespan)) + minLifespan);
+		
+		energy = (int)(Math.random() * (maxBirthEnergy-minBirthEnergy) + minBirthEnergy);
+		
 		IDNumber++;
 		ID = IDNumber;
-	}
-	
-	private void setVxVy()
-	{
-		vX = 0;
-		vY = 0;
-		while((vX == 0) && (vY == 0))
-		{
-			vX = (int)Math.floor(Math.random() * 3) - 1;
-			vY = (int)Math.floor(Math.random() * 3) - 1;
-			System.out.println(vY + "  " + vX);
-		}
-	}
-	
-	public void setXY(int newX, int newY)
-	{
-		x = newX;
-		y = newY;
-	}
-	
-	public void setRabbitsGrassSimulationSpace(RabbitsGrassSimulationSpace rgs)
-	{
-		rgsSpace = rgs;
-	}
-	
-	public String getID()
-	{
-		return "A-" + ID;
 		
-	}
-	
-	public int getGrass()
-	{
-		return grass;
-	}
-	
-	public int getStepsToLive()
-	{
-		return stepsToLive;
-	}
-	
-	public void report()
-	{
-		System.out.println(getID() + " at " + x + ", " + y + " has " + getGrass() + " dollars and " + getStepsToLive() + " steps to live."); 
 	}
 	
 	public void draw(SimGraphics G) {
 		// TODO Auto-generated method stub
-		//draw agents
-		if(stepsToLive > 10)
-			G.drawFastRoundRect(Color.white);
-		else
-			G.drawFastRoundRect(Color.blue);
+		
+		G.drawFastRoundRect(Color.white);
 	}
 
 	public int getX() {
@@ -97,43 +46,35 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 		return y;
 	}
 	
-	public void step()
-	{
-		int newX = x + vX;
-		int newY = y + vY;
-		
-		Object2DGrid grid = rgsSpace.getCurrentAgentSpace();
-		newX = (newX + grid.getSizeX()) % grid.getSizeX();
-		newY = (newY + grid.getSizeY()) % grid.getSizeY();
-		
-		if(tryMove(newX, newY))
-		{
-			grass += rgsSpace.takeGrassAt(x, y);
-		}
-		else
-		{
-			RabbitsGrassSimulationAgent rgsa = rgsSpace.getAgentAt(newX,newY);
-			if(rgsa != null)
-			{
-				if(grass > 0)
-				{
-					rgsa.receiveGrass(1);
-					grass--;
-				}
-			}
-			setVxVy();
-		}
-		stepsToLive--;
+	
+	public int getEnergy(){
+		return energy;
 	}
 	
-	private boolean tryMove(int newX, int newY)
-	{
-		//returns true if true if the cell is empty
-		return rgsSpace.moveAgentAt(x,y,newX,newY);
+	public void setXY(int newX, int newY){
+		x = newX;
+		y = newY;
 	}
 	
-	public void receiveGrass(int amount)
-	{
-		grass += amount;
+	public String getID(){
+		
+		return "Rabbit-" + ID;
 	}
+	
+	public void report(){
+		
+		System.out.println(getID() + " at " + 
+				x + ", " + y + " has " + getEnergy() +
+				" energy left");
+	}
+	
+	public void step(){
+		
+		// decrease energy by 1 each step
+		energy--;
+		
+		
+	}
+	
+	
 }

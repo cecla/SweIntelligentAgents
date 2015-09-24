@@ -1,0 +1,57 @@
+import uchicago.src.sim.space.Object2DGrid;
+
+/**
+ * Class that implements the simulation space of the rabbits grass simulation.
+ * @author 
+ */
+
+public class RabbitsGrassSimulationSpace 
+{
+	private Object2DGrid grassSpace;
+	
+	// creating the window
+	public RabbitsGrassSimulationSpace(int x, int y)
+	{
+		grassSpace = new Object2DGrid(x,y);
+	
+		for(int i = 0; i < x; i++)
+		{
+			for(int j = 0; j < y; j++)
+			{
+				// every coord. set to zero
+				grassSpace.putObjectAt(i, j, new Integer(0));
+			}
+		}
+	}
+	
+	public void growGrass(int grass)
+	{
+		//grow grass randomly in the space
+		for(int i = 0; i < grass; i++)
+		{
+			// choose the coord. for the spec. grass
+			int x = (int)(Math.random()*(grassSpace.getSizeX()));
+			int y = (int)(Math.random()*(grassSpace.getSizeY()));
+			
+			// get the value of the object at those coord.
+			int currentValue = getGrassValueAt(x,y);
+			
+			// replace the value of the grass object to current currentValue + 1
+			grassSpace.putObjectAt(x, y, new Integer(currentValue + 1));
+		}
+	}
+	
+	public int getGrassValueAt(int x, int y)
+	{
+		int i;
+		if(grassSpace.getObjectAt(x, y) != null)
+		{
+			i = ((Integer)grassSpace.getObjectAt(x, y)).intValue();
+		}
+		else
+		{
+			i = 0;
+		}
+		return i;
+	}
+}

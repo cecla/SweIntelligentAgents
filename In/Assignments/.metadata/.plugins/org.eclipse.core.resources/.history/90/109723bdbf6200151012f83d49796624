@@ -1,0 +1,58 @@
+import uchicago.src.sim.gui.Drawable;
+import uchicago.src.sim.gui.SimGraphics;
+
+
+/**
+ * Class that implements the simulation agent for the rabbits grass simulation.
+
+ * @author
+ */
+
+public class RabbitsGrassSimulationAgent implements Drawable {
+
+	private int x;
+	private int y;
+	private int energy;
+	
+	public RabbitsGrassSimulationAgent(int minBirthEnergy, int maxBirthEnergy){
+		// initialize energy and position
+		x = -1;
+		y = -1;
+		
+		energy = (int)(Math.random() * (maxBirthEnergy-minBirthEnergy) + minBirthEnergy);
+		
+	}
+	
+	public void draw(SimGraphics arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public int getX() {
+		// TODO Auto-generated method stub
+		return x;
+	}
+
+	public int getY() {
+		// TODO Auto-generated method stub
+		return y;
+	}
+	
+	public void setX(int newX) {
+		
+		x = newX;
+		
+	}
+	
+	public void setY(int newY){
+		
+		y = newY;
+		
+	}
+	
+	public int getEnergy(){
+		return energy;
+	}
+	
+
+}
