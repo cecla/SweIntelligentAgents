@@ -18,6 +18,8 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 	private static int IDNumber = 0;
 	private int ID;
 	
+	private RabbitsGrassSimulationSpace rgsSpace;
+	
 	public RabbitsGrassSimulationAgent(int minBirthEnergy, int maxBirthEnergy){
 		// initialize energy,position and assigning a unique ID
 		x = -1;
@@ -68,12 +70,21 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 				" energy left");
 	}
 	
-	public void step(){
-		
+	
+	public void step(){	
 		// decrease energy by 1 each step
 		energy--;
-		
-		
+		// increase energy by amount of grass at position after step
+		energy += rgsSpace.eatGrassAt(x, y);
+	}
+	
+	// this function is needed in order to be able to remove energy after giving birth
+	public void setEnergy(int e){
+		energy = e;
+	}
+	
+	public void setRabbitsGrassSimulationSpace(RabbitsGrassSimulationSpace rgss){
+		rgsSpace = rgss;
 	}
 	
 	

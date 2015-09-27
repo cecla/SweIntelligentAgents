@@ -86,11 +86,12 @@ public class RabbitsGrassSimulationSpace
 			int x = (int) (Math.random()*(agentSpace.getSizeX()));
 			int y = (int) (Math.random()*(agentSpace.getSizeY()));
 		
-			if(isCellOccupied(x,y)!= false){
+			if(isCellOccupied(x,y)== false){
 				agentSpace.putObjectAt(x, y, rgsA);
 		
 				// assigning the agent it's current position
 				rgsA.setXY(x, y);
+				rgsA.setRabbitsGrassSimulationSpace(this);
 				retValue = true;
 			}
 			count++;
@@ -102,6 +103,23 @@ public class RabbitsGrassSimulationSpace
 	public Object2DGrid getCurrentAgentSpace(){
 		
 		return agentSpace;
+	}
+	
+	public void removeAgentAt(int x,int y){
+		// set position in agentspace to null which will remove the pointer to that agent object.
+		//System.out.println("X: " + x + " Y: " + y);
+		agentSpace.putObjectAt(x, y, null);
+		
+	}
+	
+	// method that returns the grass amount at a specified position
+	public int eatGrassAt(int x,int y){
+		
+		int grass = getGrassValueAt(x,y);
+		grassSpace.putObjectAt(x, y, new Integer(0));
+
+		System.out.println("x: " + x + " y: " + y + " Grass = " + grass);
+		return grass;
 	}
 	
 }
