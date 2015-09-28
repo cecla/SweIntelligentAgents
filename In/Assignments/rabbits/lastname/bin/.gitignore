@@ -4,3 +4,5 @@
 /RabbitsGrassSimulationSpace.class
 /RabbitsGrassSimulationModel$1RabbitsGrassStep.class
 /RabbitsGrassSimulationModel$1RabbitsGrassCountLiving.class
+/RabbitsGrassSimulationModel$agentsOverTime.class
+/RabbitsGrassSimulationModel$1RabbitsGrassUpdateLivingAgents.class

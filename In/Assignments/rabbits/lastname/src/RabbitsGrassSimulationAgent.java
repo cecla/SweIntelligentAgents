@@ -44,8 +44,24 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 		
 		while((vX == 0) && (vY == 0)){
 			
-			vX = (int) Math.floor(Math.random()*3)-1;
-			vY = (int) Math.floor(Math.random()*3)-1;
+			// pick x or y to begin randomization
+			int dir =  (int) Math.round(Math.random());
+			
+			
+			// one of x or y must be 0, in order to get directions north,south,east, west
+			if(dir == 0){
+				
+				vX = (int) Math.floor(Math.random()*3)-1;
+
+				
+			}else{
+				
+				vY = (int) Math.floor(Math.random()*3)-1;
+				
+			}
+			
+			
+			
 			
 		}
 		
@@ -100,16 +116,19 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 		
 		Object2DGrid grid =  rgsSpace.getCurrentAgentSpace();
 		newX = (newX + grid.getSizeX()) % grid.getSizeX();
-		newY = (newY) + grid.getSizeY() % grid.getSizeY();
+		newY = (newY + grid.getSizeY()) % grid.getSizeY();
 		
 		if(tryMove(newX,newY)){
-			energy += rgsSpace.eatGrassAt(newX, newY);
-			
-		}else{
-			
-			setVxVy();
+			int grassValue = rgsSpace.eatGrassAt(newX, newY);
+			// give the rabbit differing amounts of energy when eating grass
+			int energyValue = (int) Math.round(((grassValue/2) + (Math.random()*(grassValue/2))));
+	
+			energy += energyValue;
 			
 		}
+		
+		// update direction variables after each step
+		setVxVy();
 		
 		
 		// decrease energy by 1 each step

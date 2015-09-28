@@ -66,7 +66,6 @@ public class RabbitsGrassSimulationSpace
 	public boolean isCellOccupied(int x, int y){
 		
 		boolean retValue = false;
-		System.out.println("x: " + x + " y: " + y);
 		if(agentSpace.getObjectAt(x, y)!= null){
 			retValue = true;
 		}
@@ -119,7 +118,6 @@ public class RabbitsGrassSimulationSpace
 		int grass = getGrassValueAt(x,y);
 		grassSpace.putObjectAt(x, y, new Integer(0));
 
-		System.out.println("x: " + x + " y: " + y + " Grass = " + grass);
 		return grass;
 	}
 	

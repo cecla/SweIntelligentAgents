@@ -1,6 +1,9 @@
 import java.awt.Color;
 import java.util.ArrayList;
 
+import uchicago.src.reflector.RangePropertyDescriptor;
+import uchicago.src.sim.analysis.BinDataSource;
+import uchicago.src.sim.analysis.OpenHistogram;
 import uchicago.src.sim.engine.BasicAction;
 import uchicago.src.sim.engine.Schedule;
 import uchicago.src.sim.engine.SimModelImpl;
@@ -30,6 +33,8 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private static final int AGENT_MIN_ENERGY = 30;
 	private static final int BIRTH_THRESHOLD = 50; // energy level required for giving birth
 	private static final int BIRTHCOST = 20; // energy exhausted when spawning offspring. NOT ADDED TO INIT PARAMS.
+	private static final int GRASS_GROWTH_RATE = 20;
+	
 	
 	private Schedule schedule;
 	
@@ -48,6 +53,25 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private int minBirthEnergy = AGENT_MIN_ENERGY;
 	private int birthThreshold = BIRTH_THRESHOLD;
 	private int birthCost = BIRTHCOST;
+	private int grassGrowthRate = GRASS_GROWTH_RATE;
+	
+	private OpenHistogram agentPopulation;
+	
+	class agentsOverTime implements BinDataSource{
+		
+		public double getBinValue(Object o) {
+
+				RabbitsGrassSimulationAgent rgsa = (RabbitsGrassSimulationAgent) o;
+				
+				int livingAgents = countLivingAgents();
+				
+				return livingAgents;
+			
+		    }
+		
+		
+	}
+	
 	
 		public static void main(String[] args) {
 			
@@ -62,6 +86,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			buildDisplay();
 			
 			displaySurf.display();
+			agentPopulation.display();
 		}
 		
 		public void buildModel()
@@ -103,7 +128,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 					spawnNewAgents();
 					
 					// grow new grass
-					rgsSpace.growGrass(5);
+					rgsSpace.growGrass(grassGrowthRate);
 					
 					// update display every step
 					displaySurf.updateDisplay();
@@ -124,6 +149,16 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			// count living every 10 steps
 			schedule.scheduleActionAt(10, new RabbitsGrassCountLiving());
 			
+			
+			class RabbitsGrassUpdateLivingAgents extends BasicAction{
+				public void execute(){
+					
+					agentPopulation.step();
+				}
+				
+			}
+			
+			schedule.scheduleActionAt(10, new RabbitsGrassUpdateLivingAgents());
 			
 			
 			
@@ -147,14 +182,17 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			Object2DDisplay displayAgents = new Object2DDisplay(rgsSpace.getCurrentAgentSpace());
 			displayAgents.setObjectList(agentList);
 			
-			displaySurf.addDisplayable(displayGrass, "Grass");
-			displaySurf.addDisplayable(displayAgents, "Agents");
+			displaySurf.addDisplayableProbeable(displayGrass, "Grass");
+			displaySurf.addDisplayableProbeable(displayAgents, "Agents");
+			
+		    agentPopulation.createHistogramItem("Living Agents Over Time",agentList,new agentsOverTime());
 		}
 
 		//parameters that we can change before the setup
 		public String[] getInitParam() 
 		{
-			String[] initParams = {"NumAgents", "WorldXSize", "WorldYSize", "TotalGrass", "MinBirthEnergy", "MaxBirthEnergy", "BirthThreshold"};
+			String[] initParams = {"NumAgents", "WorldXSize", "WorldYSize", "TotalGrass",
+					"MinBirthEnergy", "MaxBirthEnergy", "BirthThreshold", "GrassGrowthRate", "BirthCost"};
 			return initParams;
 		}
 
@@ -177,6 +215,23 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			agentList = new ArrayList<RabbitsGrassSimulationAgent>();
 			schedule = new Schedule(1);
 			
+			// creating sliders for init parameters
+			RangePropertyDescriptor pdAgents = new RangePropertyDescriptor("NumAgents",0,100,20);
+			descriptors.put("NumAgents", pdAgents);
+			
+			RangePropertyDescriptor pdWorldXSize = new RangePropertyDescriptor("WorldXSize",20,100,20);
+			descriptors.put("WorldXSize", pdWorldXSize);
+			
+			RangePropertyDescriptor pdWorldYSize = new RangePropertyDescriptor("WorldYSize",20,100,20);
+			descriptors.put("WorldYSize", pdWorldYSize);
+			
+			RangePropertyDescriptor pdBirthThreshold = new RangePropertyDescriptor("BirthThreshold",0,70,10);
+			descriptors.put("BirthThreshold", pdBirthThreshold);
+			
+			RangePropertyDescriptor pdGrassGrowthRate = new RangePropertyDescriptor("GrassGrowthRate",0,100,10);
+			descriptors.put("GrassGrowthRate", pdGrassGrowthRate);
+			
+			
 			// reset old display
 			if (displaySurf != null)
 			{
@@ -185,6 +240,13 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			displaySurf = null;
 			
 			displaySurf = new DisplaySurface(this, "Rabbits Grass Model Window 1");
+			
+			if (agentPopulation != null){
+				agentPopulation.dispose();
+			    }
+			agentPopulation = null;
+		    
+			agentPopulation = new OpenHistogram("Living Agents Over Time", 10, 0);
 			
 			registerDisplaySurface("Rabbits Grass Model Window 1", displaySurf);
 		
@@ -266,6 +328,26 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		public int getBirthThreshold()
 		{
 			return birthThreshold;
+		}
+		
+		public int getGrassGrowthRate()
+		{
+			return grassGrowthRate;
+		}
+		
+		public void setGrassGrowthRate(int gr)
+		{
+			grassGrowthRate = gr;
+		}
+		
+		public int getBirthCost()
+		{
+			return birthCost;
+		}
+		
+		public void setBirthCost(int bc)
+		{
+			birthCost = bc;
 		}
 		
 		
