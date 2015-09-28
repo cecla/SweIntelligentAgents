@@ -3,7 +3,10 @@ import java.util.ArrayList;
 
 import uchicago.src.reflector.RangePropertyDescriptor;
 import uchicago.src.sim.analysis.BinDataSource;
+import uchicago.src.sim.analysis.DataSource;
 import uchicago.src.sim.analysis.OpenHistogram;
+import uchicago.src.sim.analysis.OpenSequenceGraph;
+import uchicago.src.sim.analysis.Sequence;
 import uchicago.src.sim.engine.BasicAction;
 import uchicago.src.sim.engine.Schedule;
 import uchicago.src.sim.engine.SimModelImpl;
@@ -56,6 +59,8 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private int grassGrowthRate = GRASS_GROWTH_RATE;
 	
 	private OpenHistogram agentPopulation;
+	private OpenSequenceGraph livingAgents;
+	
 	
 	class agentsOverTime implements BinDataSource{
 		
@@ -68,7 +73,22 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 				return livingAgents;
 			
 		    }
+	}
+	
+	class livingAgentsGraph implements DataSource,Sequence{
 		
+		public Object execute(){
+			
+			return new Double(getSValue());
+			
+		}
+
+		@Override
+		public double getSValue() {
+			// TODO Auto-generated method stub
+			
+			return (double)countLivingAgents();
+		}
 		
 	}
 	
@@ -86,7 +106,9 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			buildDisplay();
 			
 			displaySurf.display();
-			agentPopulation.display();
+			//agentPopulation.display();
+			livingAgents.display();
+			
 		}
 		
 		public void buildModel()
@@ -153,12 +175,13 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			class RabbitsGrassUpdateLivingAgents extends BasicAction{
 				public void execute(){
 					
-					agentPopulation.step();
+					livingAgents.step();
 				}
 				
 			}
 			
-			schedule.scheduleActionAt(10, new RabbitsGrassUpdateLivingAgents());
+			schedule.scheduleActionAtInterval(10, new RabbitsGrassUpdateLivingAgents());
+			
 			
 			
 			
@@ -185,7 +208,10 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			displaySurf.addDisplayableProbeable(displayGrass, "Grass");
 			displaySurf.addDisplayableProbeable(displayAgents, "Agents");
 			
-		    agentPopulation.createHistogramItem("Living Agents Over Time",agentList,new agentsOverTime());
+		    //agentPopulation.createHistogramItem("Living Agents Over Time",agentList,new agentsOverTime());
+		
+		    livingAgents.addSequence("Living Agents", new livingAgentsGraph());
+		
 		}
 
 		//parameters that we can change before the setup
@@ -195,7 +221,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 					"MinBirthEnergy", "MaxBirthEnergy", "BirthThreshold", "GrassGrowthRate", "BirthCost"};
 			return initParams;
 		}
-
+		
 		public String getName() {
 			// TODO Auto-generated method stub
 			return null;
@@ -241,15 +267,27 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			
 			displaySurf = new DisplaySurface(this, "Rabbits Grass Model Window 1");
 			
-			if (agentPopulation != null){
-				agentPopulation.dispose();
+			//reset the graph and histogram
+			if (livingAgents != null){
+				livingAgents.dispose();
+			    }
+			livingAgents = null;
+			
+			
+			/*if (agentPopulation != null){
+				//agentPopulation.dispose();
 			    }
 			agentPopulation = null;
 		    
-			agentPopulation = new OpenHistogram("Living Agents Over Time", 10, 0);
+			//agentPopulation = new OpenHistogram("Living Agents Over Time", 10, 0);
+			*/
+			
+			livingAgents = new OpenSequenceGraph("Living Agents Over Time",this);
 			
 			registerDisplaySurface("Rabbits Grass Model Window 1", displaySurf);
 		
+			this.registerMediaProducer("Plot", livingAgents);
+			
 		}
 		
 		private void addNewAgent(){
