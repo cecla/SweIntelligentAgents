@@ -66,6 +66,7 @@ public class RabbitsGrassSimulationSpace
 	public boolean isCellOccupied(int x, int y){
 		
 		boolean retValue = false;
+		System.out.println("x: " + x + " y: " + y);
 		if(agentSpace.getObjectAt(x, y)!= null){
 			retValue = true;
 		}
@@ -120,6 +121,24 @@ public class RabbitsGrassSimulationSpace
 
 		System.out.println("x: " + x + " y: " + y + " Grass = " + grass);
 		return grass;
+	}
+	
+	
+	// checking if cell is occupied, if not move agent and return value true. 
+	public boolean moveAgentAt(int x, int y, int newX, int newY){
+		boolean retValue = false;
+		
+		System.out.println("x: " + x + " y: " + y + " newX: " + newX + " newY: " + y);
+		if (!isCellOccupied(newX,newY)){
+
+			RabbitsGrassSimulationAgent rgsa = (RabbitsGrassSimulationAgent) agentSpace.getObjectAt(x, y);
+			removeAgentAt(x,y);
+			rgsa.setXY(newX, newY);
+			agentSpace.putObjectAt(newX, newY, rgsa);
+			retValue = true;
+			
+		}	
+		return retValue;
 	}
 	
 }

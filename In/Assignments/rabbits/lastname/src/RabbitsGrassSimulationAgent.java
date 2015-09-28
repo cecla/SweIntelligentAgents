@@ -2,6 +2,7 @@ import java.awt.Color;
 
 import uchicago.src.sim.gui.Drawable;
 import uchicago.src.sim.gui.SimGraphics;
+import uchicago.src.sim.space.Object2DGrid;
 
 
 /**
@@ -18,6 +19,9 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 	private static int IDNumber = 0;
 	private int ID;
 	
+	private int vX;
+	private int vY;
+	
 	private RabbitsGrassSimulationSpace rgsSpace;
 	
 	public RabbitsGrassSimulationAgent(int minBirthEnergy, int maxBirthEnergy){
@@ -26,9 +30,25 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 		y = -1;
 		
 		energy = (int)(Math.random() * (maxBirthEnergy-minBirthEnergy) + minBirthEnergy);
+		setVxVy();
 		
 		IDNumber++;
-		ID = IDNumber;
+		ID = IDNumber;	
+	}
+	
+	
+	private void setVxVy(){
+		
+		vX = 0;
+		vY = 0;
+		
+		while((vX == 0) && (vY == 0)){
+			
+			vX = (int) Math.floor(Math.random()*3)-1;
+			vY = (int) Math.floor(Math.random()*3)-1;
+			
+		}
+		
 		
 	}
 	
@@ -71,7 +91,27 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 	}
 	
 	
-	public void step(){	
+	public void step(){
+		
+		// creating new x and y by adding direction variables to current position, test if move is permitted
+		// if permitted move and eat grass at position, otherwise set new direction for next step.
+		int newX = x + vX;
+		int newY = y + vY;
+		
+		Object2DGrid grid =  rgsSpace.getCurrentAgentSpace();
+		newX = (newX + grid.getSizeX()) % grid.getSizeX();
+		newY = (newY) + grid.getSizeY() % grid.getSizeY();
+		
+		if(tryMove(newX,newY)){
+			energy += rgsSpace.eatGrassAt(newX, newY);
+			
+		}else{
+			
+			setVxVy();
+			
+		}
+		
+		
 		// decrease energy by 1 each step
 		energy--;
 		// increase energy by amount of grass at position after step
@@ -87,5 +127,10 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 		rgsSpace = rgss;
 	}
 	
+	// testing whether a move is permitted or not
+	private boolean tryMove(int newX, int newY){
+		return rgsSpace.moveAgentAt(x,y,newX,newY);
+	
+	}
 	
 }
