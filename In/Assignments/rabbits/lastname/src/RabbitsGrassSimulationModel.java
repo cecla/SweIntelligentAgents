@@ -60,7 +60,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	
 	private OpenHistogram agentPopulation;
 	private OpenSequenceGraph livingAgents;
-	
+	private OpenSequenceGraph grassInSpace;
 	
 	class agentsOverTime implements BinDataSource{
 		
@@ -75,6 +75,8 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		    }
 	}
 	
+	
+	// creating two classes for creating charts of living agents and amount of grass in space.
 	class livingAgentsGraph implements DataSource,Sequence{
 		
 		public Object execute(){
@@ -90,6 +92,21 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			return (double)countLivingAgents();
 		}
 		
+	}
+	
+	class grassInSpaceGraph implements DataSource,Sequence{
+		
+		public Object execute(){
+			
+			return new Double(getSValue());
+			
+		}
+		@Override
+		public double getSValue() {
+			// TODO Auto-generated method stub
+			
+			return (double)getTotalGrassAmount();
+		}
 	}
 	
 	
@@ -108,6 +125,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			displaySurf.display();
 			//agentPopulation.display();
 			livingAgents.display();
+			grassInSpace.display();
 			
 		}
 		
@@ -154,27 +172,29 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 					
 					// update display every step
 					displaySurf.updateDisplay();
+					
 				}
 			}
 			
 			// schedule action to be called every turn
 			schedule.scheduleActionBeginning(0, new RabbitsGrassStep());
 			
-			class RabbitsGrassCountLiving extends BasicAction{
+			/*class RabbitsGrassCountLiving extends BasicAction{
 				
 				public void execute(){
 					
 					countLivingAgents();
-					
+				
 				}			
 			}
 			// count living every 10 steps
-			schedule.scheduleActionAt(10, new RabbitsGrassCountLiving());
+			schedule.scheduleActionAtInterval(10, new RabbitsGrassCountLiving());
 			
+			*/
 			
+			// update chart with number of living agents
 			class RabbitsGrassUpdateLivingAgents extends BasicAction{
 				public void execute(){
-					
 					livingAgents.step();
 				}
 				
@@ -182,6 +202,17 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			
 			schedule.scheduleActionAtInterval(10, new RabbitsGrassUpdateLivingAgents());
 			
+			// update grass in space chart
+			class RabbitsGrassUpdateTotalGrass extends BasicAction{
+				
+				public void execute(){
+					
+					grassInSpace.step();
+					
+				}	
+			}
+			
+			schedule.scheduleActionAtInterval(10, new RabbitsGrassUpdateTotalGrass());
 			
 			
 			
@@ -211,7 +242,8 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		    //agentPopulation.createHistogramItem("Living Agents Over Time",agentList,new agentsOverTime());
 		
 		    livingAgents.addSequence("Living Agents", new livingAgentsGraph());
-		
+		    grassInSpace.addSequence("Grass in Space", new grassInSpaceGraph());
+		    
 		}
 
 		//parameters that we can change before the setup
@@ -224,7 +256,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		
 		public String getName() {
 			// TODO Auto-generated method stub
-			return null;
+			return "Rabbits Grass Simulation";
 		}
 
 		public Schedule getSchedule() {
@@ -267,11 +299,16 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			
 			displaySurf = new DisplaySurface(this, "Rabbits Grass Model Window 1");
 			
-			//reset the graph and histogram
+			//reset the graphs and histogram
 			if (livingAgents != null){
 				livingAgents.dispose();
 			    }
 			livingAgents = null;
+			
+			if (grassInSpace != null){
+				grassInSpace.dispose();
+			}
+			grassInSpace = null;
 			
 			
 			/*if (agentPopulation != null){
@@ -283,10 +320,12 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			*/
 			
 			livingAgents = new OpenSequenceGraph("Living Agents Over Time",this);
+			grassInSpace = new OpenSequenceGraph("Total Amount of Grass in Space",this);
 			
 			registerDisplaySurface("Rabbits Grass Model Window 1", displaySurf);
-		
+			
 			this.registerMediaProducer("Plot", livingAgents);
+			this.registerMediaProducer("Plot", grassInSpace);
 			
 		}
 		
@@ -416,6 +455,22 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 					
 				}
 			}		
+		}
+		
+		private int getTotalGrassAmount(){
+			
+			int totalGrass = 0;
+			
+			for(int i = 0; i < worldXSize;i++){
+				for(int j = 0; j < worldYSize; j++){
+					
+					totalGrass += rgsSpace.getGrassValueAt(i, j);
+				}	
+				
+			}
+			return totalGrass;
+			
+			
 		}
 		
 		private void spawnNewAgents(){

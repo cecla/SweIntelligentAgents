@@ -7,3 +7,6 @@
 /RabbitsGrassSimulationModel$agentsOverTime.class
 /RabbitsGrassSimulationModel$1RabbitsGrassUpdateLivingAgents.class
 /RabbitsGrassSimulationModel$livingAgentsGraph.class
+/RabbitsGrassSimulationModel$grassInSpace.class
+/RabbitsGrassSimulationModel$grassInSpaceGraph.class
+/RabbitsGrassSimulationModel$1RabbitsGrassUpdateTotalGrass.class
