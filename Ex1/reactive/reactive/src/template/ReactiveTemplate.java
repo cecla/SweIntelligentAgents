@@ -40,7 +40,7 @@ public class ReactiveTemplate implements ReactiveBehavior {
 		createStates(topology, td, agent);
 		vStates = new Vector<Double>();
 		
-		double dummy = calculateVs(states, discount,0);
+		calculateVs(states, discount, topology);
 		
 		for(int i = 0; i < vStates.size(); i++)
 		{
@@ -133,61 +133,68 @@ public class ReactiveTemplate implements ReactiveBehavior {
 		}
 	}
 	
-	public double calculateVs(Vector<State> states, double discount, int c)
+	public void calculateVs(Vector<State> states, double discount, Topology topology)
 	{
-		double temp1 = 0;
-		double temp2 = 0;
-		double tDisc = discount;
-		
 		
 		for(int i = 0; i < states.size(); i++)
 		{
-			for(int j = 0; j < 2; j++)
-			{
-				//action 1 = deliver
-				if(j == 0)
-				{
-					for(int l = 0; l < states.get(i).getProbDel().size(); l++)
-					{
-						temp1 += states.get(i).getProbDel().get(l) * tDisc;
-						if(c < 10)
-						{
-							c++;
-							tDisc -= 0.05;
-							temp1 *= calculateVs(states, tDisc, c);
-						}
-						System.out.println(c);
-						if(c > 1)return temp1;
-					}
-					//vStates.add(states.get(i).getRewardDel() + temp1);
-				}
-				//action 2 = move to a neighbor city
-				if(j == 1)
-				{
-					for(int l = 0; l < states.get(i).getProbMove().size(); l++)
-					{
-						temp2 += states.get(i).getProbMove().get(l) * tDisc;
-						if(c < 10)
-						{
-							c++;
-							tDisc -= 0.05;
-							temp2 *= calculateVs(states, tDisc, c);
-						}
-						if(c > 1)return temp2;
-					
-					}
-					//vStates.add(states.get(i).getRewardMove() + temp2);
-					
-				}
-			}
-			
-			if(temp1 > temp2)
-			{
-				vStates.add(0.0);
-			}
-			else vStates.add(1.0);
+			calculateNext(states, states.get(i), discount, topology);
 		}
-		return 0.0;
+	}
+	
+	public void calculateNext(Vector<State> states, State s, double discount, Topology topology)
+	{
+		double temp1 = 0.0;
+		double temp2 = 0.0;
+		
+		for(int i = 0; i < 2; i++)
+		{
+			if(i == 0) 
+			{
+				temp1 = calulateS(states, s, i, discount, topology);
+			}
+			else
+			{
+				temp2 = calulateS(states, s, i, discount, topology);
+			}
+		}
+		if(temp1 > temp2)
+		{
+			vStates.add(0.0);
+		}
+		else
+		{
+			vStates.add(1.0);
+		}
+	}
+	
+	public double calulateS(Vector<State> states, State s, int j, double discount, Topology topology)
+	{
+		double temp = 0.0;
+		for(int i = 0; i < topology.cities().size() ; i++)
+		{
+			if(j == 0)
+			{
+				temp += discount * s.getProbDel().get(i) * calculateVS(s, i, j, discount);
+			}
+			else
+			{
+				temp += discount * s.getProbMove().get(i) * calculateVS(s, i, j, discount);
+			}
+		}
+		return temp;
+	}
+	
+	public double calculateVS(State s, int j ,int i, double discount)
+	{
+		if(i == 0)
+		{
+			return (double) s.getRewardDel() + s.getProbDel().get(j) * discount;
+		}
+		else
+		{
+			return (double) s.getRewardMove() + s.getProbMove().get(j) * discount;
+		}
 	}
 
 }
