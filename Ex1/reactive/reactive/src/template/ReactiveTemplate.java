@@ -138,24 +138,25 @@ public class ReactiveTemplate implements ReactiveBehavior {
 		
 		for(int i = 0; i < states.size(); i++)
 		{
-			calculateNext(states, states.get(i), discount, topology);
+			insertVstates(states, states.get(i), discount, topology);
 		}
 	}
 	
-	public void calculateNext(Vector<State> states, State s, double discount, Topology topology)
+	public void insertVstates(Vector<State> states, State s, double discount, Topology topology)
 	{
 		double temp1 = 0.0;
 		double temp2 = 0.0;
 		
 		for(int i = 0; i < 2; i++)
 		{
+			System.out.println(s.getRewardDel() + " " + s.getRewardMove());
 			if(i == 0) 
 			{
-				temp1 = calulateS(states, s, i, discount, topology);
+				temp1 = s.getRewardDel() + calculateNext(states, s, i, discount, topology);
 			}
 			else
 			{
-				temp2 = calulateS(states, s, i, discount, topology);
+				temp2 = s.getRewardMove() + calculateNext(states, s, i, discount, topology);
 			}
 		}
 		if(temp1 > temp2)
@@ -168,24 +169,24 @@ public class ReactiveTemplate implements ReactiveBehavior {
 		}
 	}
 	
-	public double calulateS(Vector<State> states, State s, int j, double discount, Topology topology)
+	public double calculateNext(Vector<State> states, State s, int j, double discount, Topology topology)
 	{
 		double temp = 0.0;
 		for(int i = 0; i < topology.cities().size() ; i++)
 		{
 			if(j == 0)
 			{
-				temp += discount * s.getProbDel().get(i) * calculateVS(s, i, j, discount);
+				temp += s.getProbDel().get(i) * lastVs(s, i, j, discount);
 			}
 			else
 			{
-				temp += discount * s.getProbMove().get(i) * calculateVS(s, i, j, discount);
+				temp += discount * s.getProbMove().get(i) * lastVs(s, i, j, discount);
 			}
 		}
 		return temp;
 	}
 	
-	public double calculateVS(State s, int j ,int i, double discount)
+	public double lastVs(State s, int j ,int i, double discount)
 	{
 		if(i == 0)
 		{
