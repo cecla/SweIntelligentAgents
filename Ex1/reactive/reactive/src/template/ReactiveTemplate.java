@@ -2,7 +2,6 @@ package template;
 
 
 
-import java.awt.List;
 import java.util.Random;
 import java.util.Vector;
 
@@ -72,6 +71,7 @@ public class ReactiveTemplate implements ReactiveBehavior {
 		if ((counterSteps > 0)&&(counterSteps%100 == 0)) {
 			System.out.println("The total profit after "+counterSteps+" steps is "+agent.getTotalProfit()+".");
 			System.out.println("The profit per action after "+counterSteps+" steps is "+((double)agent.getTotalProfit() / counterSteps)+".");
+			System.out.println("Test med random funktion");
 		}
 		counterSteps++;
 		// END OF ADDED CODE
@@ -79,7 +79,7 @@ public class ReactiveTemplate implements ReactiveBehavior {
 		// if there is no task, move to next city
 		// or if a random number is larger than the discount, also move
 		// to the next city
-		/*if (availableTask == null || random.nextDouble() > pPickup) 
+		if (availableTask == null || random.nextDouble() > pPickup) 
 		{
 			City currentCity = vehicle.getCurrentCity();
 			action = new Move(currentCity.randomNeighbor(random));
@@ -88,9 +88,9 @@ public class ReactiveTemplate implements ReactiveBehavior {
 		{
 			action = new Pickup(availableTask);
 		}
-		return action;*/
+		return action;
 		
-		boolean delivery = false;
+		/*boolean delivery = false;
 		City currentCity = vehicle.getCurrentCity();
 		
 		//check if there is a task in the city
@@ -122,20 +122,24 @@ public class ReactiveTemplate implements ReactiveBehavior {
 		{
 			action = new Pickup(availableTask);
 		}
-		return action;
+		return action;*/
 	}
 	
 	public void createStates(Topology tp, TaskDistribution td, Agent agent)
 	{
 		states = new Vector<State>();
+		// Loop trough all the cities 
 		for(int i = 0; i < tp.cities().size(); i++)
 		{
 			for(int j = 0; j < tp.cities().size(); j++)
 			{
+				// Do not create a state if the city(i) == city(j)
 				if(i != j)
 				{	
-					State s = new State(tp.cities().get(i), tp.cities().get(j), td, agent);
+					// Create a new state and transition  
+					State s = new State(tp.cities().get(i), tp.cities().get(j));
 					states.add(s);
+					s.createRewardTable(td, agent);
 					s.setTransitionDel(td, tp, tp.cities().get(j));
 					s.setTransitionMove(td, tp, tp.cities().get(i));
 				}
@@ -187,7 +191,7 @@ public class ReactiveTemplate implements ReactiveBehavior {
 		double temp = 0.0;
 		//loop through all cities. For each city calculate discount*T(S,a,S')*V(S') 
 		//and add it do the sum(temp)
-		for(int i = 0; i < topology.cities().size() ; i++)
+		for(int i = 0; i <= topology.cities().size() ; i++)
 		{
 			if(j == 0)
 			{
