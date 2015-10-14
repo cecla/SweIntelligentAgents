@@ -23,6 +23,7 @@ public class ReactiveTemplate implements ReactiveBehavior {
 	private double pPickup;
 	private Vector<State> states;
 	private Vector<Double> vStates;
+	private int count = 0;
 	
 	// ADDED CODE - this variable keeps reference of the Agent object
 	Agent agent;
@@ -40,13 +41,17 @@ public class ReactiveTemplate implements ReactiveBehavior {
 		createStates(topology, td, agent);
 		vStates = new Vector<Double>();
 		
+		//calculate V(S) of deep 2
 		calculateVs(states, discount, topology);
+		
 		
 		for(int i = 0; i < vStates.size(); i++)
 		{
 			System.out.println(vStates.get(i));
 		}
 		System.out.println(vStates.size() + " " + states.size());
+		//58597376 & 2592
+		System.out.println(count);
 		
 		this.random = new Random();
 		this.pPickup = discount;
@@ -88,22 +93,27 @@ public class ReactiveTemplate implements ReactiveBehavior {
 		boolean delivery = false;
 		City currentCity = vehicle.getCurrentCity();
 		
+		//check if there is a task in the city
 		if(availableTask != null)
 		{
 			City delCity = availableTask.deliveryCity;
 			
+			//find out which state the agent has
+			//complexity(worst case) = states.size()=n
 			for(int i = 0; i < states.size(); i++)
 			{
 				if(currentCity.id == states.get(i).getCityCurrent() && delCity.id == states.get(i).getCityDel())
 				{
+					//check if it is worth it to take the task or not, worth it->delivery=true
 					if(vStates.get(i) == 0)
 					{
 						delivery = true;
 					}
-					break;
+					break; //find the right state->break the loop
 				}
 			}
 		}
+		//do the movement 
 		if(!delivery)
 		{
 			action = new Move(currentCity.randomNeighbor(random));
@@ -135,7 +145,7 @@ public class ReactiveTemplate implements ReactiveBehavior {
 	
 	public void calculateVs(Vector<State> states, double discount, Topology topology)
 	{
-		
+		//loop through all states
 		for(int i = 0; i < states.size(); i++)
 		{
 			insertVstates(states, states.get(i), discount, topology);
@@ -144,21 +154,24 @@ public class ReactiveTemplate implements ReactiveBehavior {
 	
 	public void insertVstates(Vector<State> states, State s, double discount, Topology topology)
 	{
-		double temp1 = 0.0;
-		double temp2 = 0.0;
+		double temp1 = 0.0; //better to take the task
+		double temp2 = 0.0; //better to not take the task
 		
+		//loop through all actions which are 2, take the task or move to a neighbor city
 		for(int i = 0; i < 2; i++)
 		{
-			System.out.println(s.getRewardDel() + " " + s.getRewardMove());
+			//System.out.println(s.getRewardDel() + " " + s.getRewardMove());
+			//calculate the fist step
 			if(i == 0) 
 			{
-				temp1 = s.getRewardDel() + calculateNext(states, s, i, discount, topology);
+				temp1 = s.getRewardDel() + calculateNext(states, s, i, discount, topology);//,2);
 			}
 			else
 			{
-				temp2 = s.getRewardMove() + calculateNext(states, s, i, discount, topology);
+				temp2 = s.getRewardMove() + calculateNext(states, s, i, discount, topology);//,2);
 			}
 		}
+		//take the task if temp1>temp2, for that state, otherwise move to next city
 		if(temp1 > temp2)
 		{
 			vStates.add(0.0);
@@ -169,29 +182,61 @@ public class ReactiveTemplate implements ReactiveBehavior {
 		}
 	}
 	
-	public double calculateNext(Vector<State> states, State s, int j, double discount, Topology topology)
+	public double calculateNext(Vector<State> states, State s, int j, double discount, Topology topology)//, int end)
 	{
 		double temp = 0.0;
+		//loop through all cities. For each city calculate discount*T(S,a,S')*V(S') 
+		//and add it do the sum(temp)
 		for(int i = 0; i < topology.cities().size() ; i++)
 		{
 			if(j == 0)
 			{
-				temp += s.getProbDel().get(i) * lastVs(s, i, j, discount);
+				//kolla på om detta stämmer
+				//temp += discount * s.getProbDel().get(i) * lastVs(s, i, 0, discount);
+				//temp += discount * s.getProbDel().get(i) * lastVs(s, i, 1, discount);
+				/*if(end > 0)	
+					for(int k = 0; k < states.size(); k++)
+					{
+						temp += discount * s.getProbDel().get(i) * calculateNext(states, states.get(k), 0, discount, topology, end-1);
+						temp += discount * s.getProbDel().get(i) * calculateNext(states, states.get(k), 1, discount, topology, end-1);
+					}
+				else
+				{*/
+					temp += discount * s.getProbDel().get(i) * lastVs(s, i, 0, discount);
+					temp += discount * s.getProbDel().get(i) * lastVs(s, i, 1, discount);
+				//}
+				
 			}
 			else
 			{
-				temp += discount * s.getProbMove().get(i) * lastVs(s, i, j, discount);
+				/*if(end > 0)
+				{
+					for(int k = 0; k < states.size(); k++)
+					{
+						temp += discount * s.getProbMove().get(i) * calculateNext(states, states.get(k), 0, discount, topology, end-1);
+						temp += discount * s.getProbMove().get(i) * calculateNext(states, states.get(k), 1, discount, topology, end-1);
+					}
+				}
+				else
+				{*/
+					temp += discount * s.getProbMove().get(i) * lastVs(s, i, 0, discount);
+					temp += discount * s.getProbMove().get(i) * lastVs(s, i, 1, discount);
+				//}
 			}
 		}
 		return temp;
 	}
 	
+	//Calculate the deepest step in the tree
 	public double lastVs(State s, int j ,int i, double discount)
 	{
+		//If i==0 -> calculate for action1, take the task
+		count++;
 		if(i == 0)
 		{
 			return (double) s.getRewardDel() + s.getProbDel().get(j) * discount;
 		}
+		//If i==1 -> calculate for action2, don't take the task
 		else
 		{
 			return (double) s.getRewardMove() + s.getProbMove().get(j) * discount;
