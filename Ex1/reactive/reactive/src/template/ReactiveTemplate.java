@@ -79,7 +79,7 @@ public class ReactiveTemplate implements ReactiveBehavior {
 		// if there is no task, move to next city
 		// or if a random number is larger than the discount, also move
 		// to the next city
-		if (availableTask == null || random.nextDouble() > pPickup) 
+		/*if (availableTask == null || random.nextDouble() > pPickup) 
 		{
 			City currentCity = vehicle.getCurrentCity();
 			action = new Move(currentCity.randomNeighbor(random));
@@ -88,9 +88,9 @@ public class ReactiveTemplate implements ReactiveBehavior {
 		{
 			action = new Pickup(availableTask);
 		}
-		return action;
+		return action;*/
 		
-		/*boolean delivery = false;
+		boolean delivery = false;
 		City currentCity = vehicle.getCurrentCity();
 		
 		//check if there is a task in the city
@@ -122,7 +122,7 @@ public class ReactiveTemplate implements ReactiveBehavior {
 		{
 			action = new Pickup(availableTask);
 		}
-		return action;*/
+		return action;
 	}
 	
 	public void createStates(Topology tp, TaskDistribution td, Agent agent)
@@ -191,7 +191,17 @@ public class ReactiveTemplate implements ReactiveBehavior {
 		double temp = 0.0;
 		//loop through all cities. For each city calculate discount*T(S,a,S')*V(S') 
 		//and add it do the sum(temp)
-		for(int i = 0; i <= topology.cities().size() ; i++)
+		int p = 0;
+		//KOLLA HÄR
+		if(j == 0)
+		{
+			p = s.getProbDel().size();
+		}
+		else
+		{
+			p = s.getProbMove().size();
+		}
+		for(int i = 0; i < p ; i++)
 		{
 			if(j == 0)
 			{
@@ -223,7 +233,11 @@ public class ReactiveTemplate implements ReactiveBehavior {
 				}
 				else
 				{*/
+				//KOLLA HÄR
+				if(i < s.getProbDel().size())
+				{
 					temp += discount * s.getProbMove().get(i) * lastVs(s, i, 0, discount);
+				}
 					temp += discount * s.getProbMove().get(i) * lastVs(s, i, 1, discount);
 				//}
 			}
